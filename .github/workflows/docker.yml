@@ -196,6 +196,7 @@ jobs:
             - name: Load and push Docker image
               env:
                   METADATA: ${{ needs.build.outputs.metadata }}
+                  PRIMARY_TAG: ${{ needs.build.outputs.primary-tag }}
               run: |
                   set -euo pipefail
                   docker load --input /tmp/image.tar
@@ -204,8 +205,16 @@ jobs:
                     echo "ERROR: Build metadata is empty; refusing to publish without tags."
                     exit 1
                   fi
+                  if [ -z "${PRIMARY_TAG:-}" ]; then
+                    echo "ERROR: Primary tag is empty; cannot retag loaded image."
+                    exit 1
+                  fi
                   # Push each tag individually for reliability
                   echo "${METADATA}" | jq -r '.tags[]' | while read -r tag; do
+                    if [ "${tag}" != "${PRIMARY_TAG}" ]; then
+                      echo "Tagging ${PRIMARY_TAG} as ${tag}"
+                      docker tag "${PRIMARY_TAG}" "${tag}"
+                    fi
                     echo "Pushing: ${tag}"
                     docker push "${tag}"
                   done
