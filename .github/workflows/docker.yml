@@ -102,8 +102,7 @@ jobs:
 
       - name: Save Docker image to tarball
         run: |
-          docker save -o /tmp/image.tar ${{ steps.meta.outputs.tags }}
-
+          docker save -o /tmp/image.tar "${{ steps.primary-tag.outputs.tag }}"
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
