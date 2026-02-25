@@ -1,4 +1,5 @@
-#!/bin/bash -euo pipefail
+#!/bin/bash
+set -euo pipefail
 # =============================================================================
 # Policy Check: Forbidden Sources and Unsafe Patterns
 # =============================================================================
