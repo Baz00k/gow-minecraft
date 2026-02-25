@@ -10,13 +10,13 @@ Wolf manages persistence by mounting host storage to the container's `/home/retr
 
 Prism Launcher follows the XDG Base Directory Specification. Within the container, data is stored at:
 
-| Path | Contents | Persists? |
-|------|----------|-----------|
-| `/home/retro/.local/share/PrismLauncher/` | Instances, mods, saves, screenshots | ✅ Yes |
-| `/home/retro/.config/PrismLauncher/` | Launcher settings, account configs | ✅ Yes |
-| `/home/retro/.cache/PrismLauncher/` | Temporary cache files | ✅ Yes (but non-critical) |
-| `/opt/prismlauncher/` | Launcher binary (AppImage) | ❌ No (rebuilt from image) |
-| `/tmp/` | Temporary files | ❌ No |
+| Path                                      | Contents                            | Persists?                  |
+| ----------------------------------------- | ----------------------------------- | -------------------------- |
+| `/home/retro/.local/share/PrismLauncher/` | Instances, mods, saves, screenshots | ✅ Yes                     |
+| `/home/retro/.config/PrismLauncher/`      | Launcher settings, account configs  | ✅ Yes                     |
+| `/home/retro/.cache/PrismLauncher/`       | Temporary cache files               | ✅ Yes (but non-critical)  |
+| `/opt/prismlauncher/`                     | Launcher binary (AppImage)          | ❌ No (rebuilt from image) |
+| `/tmp/`                                   | Temporary files                     | ❌ No                      |
 
 ### Key Subdirectories
 

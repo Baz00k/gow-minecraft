@@ -1,8 +1,9 @@
 # Source Provenance and Pinning Policy
 
-**Document Status:** Hardened (T8 Complete)  
-**Last Updated:** 2026-02-25  
+**Document Status:** Hardened (T8 Complete)
+**Last Updated:** 2026-02-25
 **Applies To:** GoW Prism Launcher Offline-Enabled Docker Image
+
 ---
 
 ## Purpose
@@ -25,6 +26,7 @@ ghcr.io/games-on-whales/base-app
 ```
 
 The `base-app` image provides the foundational runtime environment including:
+
 - Wayland compositor (Sway)
 - Input handling (inputtino)
 - Audio/video streaming infrastructure
@@ -32,13 +34,14 @@ The `base-app` image provides the foundational runtime environment including:
 
 ### Pinning Strategy
 
-| Attribute | Value | Notes |
-|-----------|-------|-------|
-| **Registry** | `ghcr.io` | GitHub Container Registry |
-| **Repository** | `games-on-whales/base-app` | Official GoW image |
-| **Tag** | `:edge` | Development build tag |
-| **Digest** | `sha256:66cb03a499a78bd81e75aa89eb7b33d5ee679355a8dae24d2989b9fd56e46b04` | Immutable digest pin (T8) |
-| **Last Verified** | 2026-02-25 | Fetched from GH package page |
+| Attribute         | Value                                                                     | Notes                        |
+| ----------------- | ------------------------------------------------------------------------- | ---------------------------- |
+| **Registry**      | `ghcr.io`                                                                 | GitHub Container Registry    |
+| **Repository**    | `games-on-whales/base-app`                                                | Official GoW image           |
+| **Tag**           | `:edge`                                                                   | Development build tag        |
+| **Digest**        | `sha256:66cb03a499a78bd81e75aa89eb7b33d5ee679355a8dae24d2989b9fd56e46b04` | Immutable digest pin (T8)    |
+| **Last Verified** | 2026-02-25                                                                | Fetched from GH package page |
+
 ### Initial Pin (T2)
 
 ```bash
@@ -54,27 +57,32 @@ BASE_APP_IMAGE=ghcr.io/games-on-whales/base-app:edge
 BASE_APP_IMAGE=ghcr.io/games-on-whales/base-app:edge@sha256:66cb03a499a78bd81e75aa89eb7b33d5ee679355a8dae24d2989b9fd56e46b04
 ```
 
-> **Note:** The digest pin ensures reproducible builds. When updating the base image, 
+> **Note:** The digest pin ensures reproducible builds. When updating the base image,
 > fetch the new digest from the GHCR package page and update `build/pins.env`.
+
 ### Good vs Bad Examples
 
 **GOOD - Immutable reference:**
+
 ```dockerfile
 FROM ghcr.io/games-on-whales/base-app:edge@sha256:abc123...
 ```
 
 **GOOD - Semver tag with digest:**
+
 ```dockerfile
 FROM ghcr.io/games-on-whales/base-app:1.2.3@sha256:abc123...
 ```
 
 **BAD - Floating tag only:**
+
 ```dockerfile
 FROM ghcr.io/games-on-whales/base-app:edge
 FROM ghcr.io/games-on-whales/base-app:latest
 ```
 
 **BAD - No version constraint:**
+
 ```dockerfile
 FROM ghcr.io/games-on-whales/base-app
 ```
@@ -96,24 +104,24 @@ The offline-enabled Prism Launcher fork must meet ALL criteria:
 
 ### Candidate: Diegiwg/PrismLauncher-Cracked
 
-| Attribute | Value |
-|-----------|-------|
-| **URL** | `https://github.com/Diegiwg/PrismLauncher-Cracked` |
-| **Stars** | ~1,500+ |
-| **Forks** | ~150+ |
-| **License** | GPL-3.0 |
-| **Modification** | MSA gate check removal only |
-| **Latest Release** | 10.0.5 (2026-02-22) |
-| **Upstream Sync** | Follows official Prism Launcher releases |
+| Attribute          | Value                                              |
+| ------------------ | -------------------------------------------------- |
+| **URL**            | `https://github.com/Diegiwg/PrismLauncher-Cracked` |
+| **Stars**          | ~1,500+                                            |
+| **Forks**          | ~150+                                              |
+| **License**        | GPL-3.0                                            |
+| **Modification**   | MSA gate check removal only                        |
+| **Latest Release** | 10.0.5 (2026-02-22)                                |
+| **Upstream Sync**  | Follows official Prism Launcher releases           |
 
 > **Final Selection:** Diegiwg/PrismLauncher-Cracked v10.0.5 confirmed in T7.
 
 ### Pinning Strategy
 
-| Pin Type | Format | Use Case |
-|----------|--------|----------|
-| **Release Tag** | `10.0.5` | Recommended - follows upstream releases |
-| **Commit SHA** | `abc123def456...` | Maximum reproducibility, requires manual updates |
+| Pin Type        | Format            | Use Case                                         |
+| --------------- | ----------------- | ------------------------------------------------ |
+| **Release Tag** | `10.0.5`          | Recommended - follows upstream releases          |
+| **Commit SHA**  | `abc123def456...` | Maximum reproducibility, requires manual updates |
 
 ### Final Pin (T7)
 
@@ -131,6 +139,7 @@ PRISM_LAUNCHER_APPIMAGE_AARCH64_SHA256=63731437ade51447256837066b349a2f693a8cc14
 ### Alternative: AUR Package
 
 Arch Linux AUR provides `prismlauncher-offline` package:
+
 - **URL:** `https://aur.archlinux.org/packages/prismlauncher-offline`
 - **Version:** 10.0.2-1
 - **Builds from:** Diegiwg/PrismLauncher-Cracked source
@@ -142,17 +151,20 @@ This may be preferred for Alpine/Arch-based builds.
 The chosen installation method uses pre-built AppImages from GitHub releases:
 
 **Why AppImage?**
+
 - **Portability:** Self-contained binary with all dependencies bundled
 - **Multi-architecture:** Supports both x86_64 and aarch64
 - **Verification:** SHA256 checksums ensure supply chain integrity
 - **Simplicity:** No build dependencies, faster CI builds
 
 **Installation Steps:**
+
 1. Download AppImage from GitHub releases based on `TARGETARCH`
 2. Verify SHA256 checksum against pinned value
 3. Make executable and symlink to `/usr/local/bin/prismlauncher`
 
 **Alternative Methods Considered:**
+
 - **Build from source:** Most reproducible but requires extensive build deps
 - **AUR package:** Arch-specific, not suitable for Debian base
 - **makedeb repo:** Used by upstream GoW but has reliability issues
@@ -160,21 +172,25 @@ The chosen installation method uses pre-built AppImages from GitHub releases:
 ### Good vs Bad Examples
 
 **GOOD - Release tag:**
+
 ```bash
 PRISM_LAUNCHER_VERSION=10.0.5
 ```
 
 **GOOD - Full commit SHA:**
+
 ```bash
 PRISM_LAUNCHER_COMMIT=062a556abc123def456789...
 ```
 
 **BAD - Branch reference:**
+
 ```bash
 PRISM_LAUNCHER_BRANCH=develop  # Floating, changes without notice
 ```
 
 **BAD - "latest" concept:**
+
 ```bash
 PRISM_LAUNCHER_VERSION=latest  # Ambiguous, not reproducible
 ```
@@ -187,11 +203,11 @@ PRISM_LAUNCHER_VERSION=latest  # Ambiguous, not reproducible
 
 Minecraft requires specific Java versions based on game version:
 
-| Java Version | Minecraft Versions | Package |
-|--------------|-------------------|---------|
-| **21** | 1.21+ | `openjdk-21-jre` |
-| **17** | 1.18 - 1.20.4 | `openjdk-17-jre` |
-| **8** | 1.16 and below | `openjdk-8-jre` |
+| Java Version | Minecraft Versions | Package          |
+| ------------ | ------------------ | ---------------- |
+| **21**       | 1.21+              | `openjdk-21-jre` |
+| **17**       | 1.18 - 1.20.4      | `openjdk-17-jre` |
+| **8**        | 1.16 and below     | `openjdk-8-jre`  |
 
 ### Pinning Strategy
 
@@ -224,34 +240,34 @@ JAVA_VERSIONS="21 17 8"
 
 ### Review Schedule
 
-| Trigger | Action | Reviewer |
-|---------|--------|----------|
-| **Monthly** | Review all pins for security updates | Maintainer |
-| **Critical CVE** | Immediate review and patch | Maintainer |
-| **Upstream Release** | Evaluate within 7 days | Maintainer |
-| **Dependency EOL** | Plan migration | Maintainer |
+| Trigger              | Action                               | Reviewer   |
+| -------------------- | ------------------------------------ | ---------- |
+| **Monthly**          | Review all pins for security updates | Maintainer |
+| **Critical CVE**     | Immediate review and patch           | Maintainer |
+| **Upstream Release** | Evaluate within 7 days               | Maintainer |
+| **Dependency EOL**   | Plan migration                       | Maintainer |
 
 ### Pin Bump Process
 
 1. **Assess Impact**
-   - Review upstream changelog
-   - Check for breaking changes
-   - Verify compatibility with GoW base
+    - Review upstream changelog
+    - Check for breaking changes
+    - Verify compatibility with GoW base
 
 2. **Test in Isolation**
-   - Build image with new pin
-   - Run smoke tests
-   - Verify offline profile functionality
+    - Build image with new pin
+    - Run smoke tests
+    - Verify offline profile functionality
 
 3. **Document Change**
-   - Update `build/pins.env`
-   - Update this policy document
-   - Create changelog entry
+    - Update `build/pins.env`
+    - Update this policy document
+    - Create changelog entry
 
 4. **Deploy**
-   - Merge to main branch
-   - CI builds and publishes new image
-   - Tag with appropriate version
+    - Merge to main branch
+    - CI builds and publishes new image
+    - Tag with appropriate version
 
 ### Freeze Periods
 
@@ -310,45 +326,48 @@ Immediate rollback is required if ANY condition is met:
 
 ### Critical Triggers (Immediate Rollback)
 
-| Trigger | Action |
-|---------|--------|
-| **Image fails to start** | Revert pin, investigate in branch |
-| **Authentication bypass appears** | Revert, security review |
-| **Data loss/corruption** | Revert, user notification |
-| **CVE in pinned version** | Revert to known-good, patch |
+| Trigger                           | Action                            |
+| --------------------------------- | --------------------------------- |
+| **Image fails to start**          | Revert pin, investigate in branch |
+| **Authentication bypass appears** | Revert, security review           |
+| **Data loss/corruption**          | Revert, user notification         |
+| **CVE in pinned version**         | Revert to known-good, patch       |
 
 ### Warning Triggers (Investigate First)
 
-| Trigger | Action |
-|---------|--------|
+| Trigger                          | Action                              |
+| -------------------------------- | ----------------------------------- |
 | **Performance regression > 20%** | Profile, assess, potentially revert |
-| **New crash reports** | Triage severity, patch or revert |
-| **Compatibility reports** | Investigate, document workaround |
+| **New crash reports**            | Triage severity, patch or revert    |
+| **Compatibility reports**        | Investigate, document workaround    |
 
 ### Rollback Procedure
 
 1. **Identify Last Known Good**
-   ```bash
-   # Check previous pins in git history
-   git log --oneline build/pins.env
-   ```
+
+    ```bash
+    # Check previous pins in git history
+    git log --oneline build/pins.env
+    ```
 
 2. **Revert Pin**
-   ```bash
-   # Revert to previous commit
-   git revert HEAD -- build/pins.env
-   ```
+
+    ```bash
+    # Revert to previous commit
+    git revert HEAD -- build/pins.env
+    ```
 
 3. **Rebuild and Publish**
-   ```bash
-   # Force rebuild with reverted pins
-   # CI handles versioning
-   ```
+
+    ```bash
+    # Force rebuild with reverted pins
+    # CI handles versioning
+    ```
 
 4. **Post-Mortem**
-   - Document trigger in issues
-   - Root cause analysis
-   - Update policy if needed
+    - Document trigger in issues
+    - Root cause analysis
+    - Update policy if needed
 
 ---
 
@@ -358,14 +377,14 @@ Immediate rollback is required if ANY condition is met:
 
 The following sources **MUST NEVER** be used in this project:
 
-| Source | Reason | Severity |
-|--------|--------|----------|
-| **TLauncher** | Malware detections on ANY.RUN, closed source, data exfiltration | **CRITICAL** |
-| **SKLauncher** | Malware detections, unauthorized data collection | **CRITICAL** |
-| **ATLauncher (unofficial mirrors)** | Supply chain risk, unverifiable | **HIGH** |
-| **Any "cracked" launcher from unverified source** | Malware risk, legal issues | **CRITICAL** |
-| **Direct binary downloads without checksum** | Tampering risk | **HIGH** |
-| **CurseForge modpacks (auto-download)** | ToS concerns, licensing | **MEDIUM** |
+| Source                                            | Reason                                                          | Severity     |
+| ------------------------------------------------- | --------------------------------------------------------------- | ------------ |
+| **TLauncher**                                     | Malware detections on ANY.RUN, closed source, data exfiltration | **CRITICAL** |
+| **SKLauncher**                                    | Malware detections, unauthorized data collection                | **CRITICAL** |
+| **ATLauncher (unofficial mirrors)**               | Supply chain risk, unverifiable                                 | **HIGH**     |
+| **Any "cracked" launcher from unverified source** | Malware risk, legal issues                                      | **CRITICAL** |
+| **Direct binary downloads without checksum**      | Tampering risk                                                  | **HIGH**     |
+| **CurseForge modpacks (auto-download)**           | ToS concerns, licensing                                         | **MEDIUM**   |
 
 ### TLauncher / SKLauncher Evidence
 
@@ -456,7 +475,7 @@ echo "Building with Prism ${PRISM_LAUNCHER_VERSION}"
 
 ## Changelog
 
-| Date | Version | Changes |
-|------|---------|---------|
-| 2026-02-25 | 1.1.0 | T8: Base image digest pinning complete, added .dockerignore, hardened Dockerfile |
-| 2026-02-25 | 1.0.0 | Initial policy document |
+| Date       | Version | Changes                                                                          |
+| ---------- | ------- | -------------------------------------------------------------------------------- |
+| 2026-02-25 | 1.1.0   | T8: Base image digest pinning complete, added .dockerignore, hardened Dockerfile |
+| 2026-02-25 | 1.0.0   | Initial policy document                                                          |

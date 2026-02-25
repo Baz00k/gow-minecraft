@@ -132,7 +132,7 @@ check_floating_refs() {
                     local linenum content
                     linenum=$(echo "${line}" | cut -d: -f1)
                     content=$(echo "${line}" | cut -d: -f2-)
-                    
+
                     # Check for floating refs (FROM with :edge or :latest but no @sha256)
                     if echo "${content}" | grep -qiE 'FROM.*:(edge|latest)' && \
                        ! echo "${content}" | grep -q '@sha256:'; then
@@ -154,7 +154,7 @@ check_floating_refs() {
         if grep -q 'BASE_APP_IMAGE=' "${pins_env}"; then
             local base_image
             base_image=$(grep 'BASE_APP_IMAGE=' "${pins_env}" | head -1 | cut -d= -f2-)
-            
+
             # Should have @sha256: in the value
             if [[ "${base_image}" == *":edge"* ]] && [[ "${base_image}" != *"@sha256:"* ]]; then
                 log_error "BASE_APP_IMAGE in pins.env uses floating ref without digest: ${base_image}"
@@ -184,7 +184,7 @@ check_unverified_downloads() {
         if [[ -f "${file}" ]]; then
             local content
             content=$(cat "${file}")
-            
+
             # Look for curl/wget downloads
             if echo "${content}" | grep -qE '(curl|wget).*(-o|-O|>)'; then
                 # Check if there's a sha256sum or sha256 verification
@@ -202,7 +202,7 @@ check_unverified_downloads() {
         if [[ -f "${file}" ]]; then
             local content
             content=$(cat "${file}")
-            
+
             # Look for curl/wget downloads of binaries
             if echo "${content}" | grep -qE '(curl|wget).*(-o|-O|>)'; then
                 # Check if there's a checksum verification
@@ -259,7 +259,7 @@ check_secrets() {
                 filename=$(echo "${match}" | cut -d: -f1)
                 local basename
                 basename=$(basename "${filename}")
-                
+
                 # Skip excluded files
                 local skip=false
                 for excluded in "${exclude_files[@]}"; do
@@ -268,7 +268,7 @@ check_secrets() {
                         break
                     fi
                 done
-                
+
                 if [[ "${skip}" == "false" ]]; then
                     log_error "Potential hardcoded secret found: ${match}"
                     ((found_violations++)) || true
@@ -287,7 +287,7 @@ check_secrets() {
             # Check if it's a template file (contains placeholder values)
             local content
             content=$(cat "${envfile}")
-            
+
             if ! echo "${content}" | grep -qE '(\$\{|<|your_|placeholder|example|XXX)'; then
                 log_warn ".env file may contain real values: ${envfile} - ensure it's in .gitignore"
                 ((found_violations++)) || true
@@ -314,13 +314,13 @@ main() {
     # Run all checks
     check_forbidden_launchers
     echo ""
-    
+
     check_floating_refs
     echo ""
-    
+
     check_unverified_downloads
     echo ""
-    
+
     check_secrets
     echo ""
 

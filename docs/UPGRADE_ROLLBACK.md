@@ -1,7 +1,7 @@
 # Upgrade and Rollback Playbook
 
-**Document Status:** Active  
-**Last Updated:** 2026-02-25  
+**Document Status:** Active
+**Last Updated:** 2026-02-25
 **Applies To:** GoW Prism Launcher Offline-Enabled Docker Image
 
 ---
@@ -16,12 +16,12 @@ This playbook documents controlled procedures for upgrading dependencies and rol
 
 Images are published to GitHub Container Registry with the following tag scheme:
 
-| Tag Type | Format | Example | Use Case |
-|----------|--------|---------|----------|
-| **Latest** | `:latest` | `ghcr.io/USER/gow-prism-offline:latest` | Most recent stable build |
-| **Semver** | `:1.0.0` | `ghcr.io/USER/gow-prism-offline:1.2.3` | Pinned release versions |
-| **Prerelease** | `:1.0.0-rc.1` | `ghcr.io/USER/gow-prism-offline:1.0.0-rc.1` | Release candidates |
-| **Commit SHA** | `:sha-abc123` | `ghcr.io/USER/gow-prism-offline:sha-8f14e45` | Exact build reference |
+| Tag Type       | Format        | Example                                      | Use Case                 |
+| -------------- | ------------- | -------------------------------------------- | ------------------------ |
+| **Latest**     | `:latest`     | `ghcr.io/USER/gow-prism-offline:latest`      | Most recent stable build |
+| **Semver**     | `:1.0.0`      | `ghcr.io/USER/gow-prism-offline:1.2.3`       | Pinned release versions  |
+| **Prerelease** | `:1.0.0-rc.1` | `ghcr.io/USER/gow-prism-offline:1.0.0-rc.1`  | Release candidates       |
+| **Commit SHA** | `:sha-abc123` | `ghcr.io/USER/gow-prism-offline:sha-8f14e45` | Exact build reference    |
 
 Rollback typically means switching from `:latest` to a specific semver tag in your Wolf config.
 
@@ -42,6 +42,7 @@ open https://github.com/games-on-whales/gow/pkgs/container/base-app
 ```
 
 Review for:
+
 - Breaking changes to environment variables
 - Changes to device requirements
 - Updates to Sway or inputtino configurations
@@ -111,6 +112,7 @@ gh pr create --title "chore: bump base image digest" --body "..."
 ### Step 6: Verify CI Passes
 
 Monitor the CI pipeline for:
+
 - Build success on both amd64 and arm64
 - No new linting errors
 - All tests pass
@@ -255,21 +257,21 @@ docker run --rm gow-prism-offline:test java -version
 
 ### Critical Triggers (Immediate Rollback Required)
 
-| Trigger | Action |
-|---------|--------|
-| Image fails to start | Revert to previous tag immediately |
-| Authentication bypass detected | Revert, conduct security review |
-| Data loss or corruption | Revert, notify users |
-| Critical CVE in pinned version | Revert to known-good, patch |
+| Trigger                        | Action                             |
+| ------------------------------ | ---------------------------------- |
+| Image fails to start           | Revert to previous tag immediately |
+| Authentication bypass detected | Revert, conduct security review    |
+| Data loss or corruption        | Revert, notify users               |
+| Critical CVE in pinned version | Revert to known-good, patch        |
 
 ### Warning Triggers (Investigate First)
 
-| Trigger | Action |
-|---------|--------|
+| Trigger                      | Action                                |
+| ---------------------------- | ------------------------------------- |
 | Performance regression > 20% | Profile, assess, potentially rollback |
-| New crash reports | Triage severity, patch or rollback |
-| Compatibility reports | Investigate, document workaround |
-| UI/UX regressions | Assess impact, may wait for patch |
+| New crash reports            | Triage severity, patch or rollback    |
+| Compatibility reports        | Investigate, document workaround      |
+| UI/UX regressions            | Assess impact, may wait for patch     |
 
 ---
 
@@ -391,23 +393,27 @@ Run these on your current working image to establish a baseline:
 Run these on the upgraded image before merging:
 
 **Container Basics:**
+
 - [ ] Image builds without errors
 - [ ] Image size is reasonable (no unexpected bloat)
 - [ ] Container starts and responds to signals
 - [ ] No unexpected warnings in build output
 
 **Java Verification:**
+
 - [ ] `java -version` shows Java 21
 - [ ] `java -version` shows Java 17
 - [ ] `java -version` shows Java 8
 - [ ] All Java versions accessible via alternatives
 
 **Prism Launcher Verification:**
+
 - [ ] `prismlauncher --version` matches new version
 - [ ] AppImage checksum verified at build time
 - [ ] Symlink to `/usr/local/bin/prismlauncher` works
 
 **Functional Tests (via Moonlight stream):**
+
 - [ ] Prism Launcher window appears
 - [ ] Can create offline/local profile
 - [ ] Can create new instance
@@ -418,6 +424,7 @@ Run these on the upgraded image before merging:
 - [ ] Audio works
 
 **Architecture Tests:**
+
 - [ ] amd64 build succeeds
 - [ ] arm64 build succeeds
 - [ ] Correct AppImage selected per architecture
@@ -439,9 +446,9 @@ After deploying to production:
 
 During these periods, upgrades require additional approval:
 
-| Period | Duration | Requirement |
-|--------|----------|-------------|
-| Pre-release | 1 week before tagged release | Maintainer approval |
+| Period        | Duration                           | Requirement          |
+| ------------- | ---------------------------------- | -------------------- |
+| Pre-release   | 1 week before tagged release       | Maintainer approval  |
 | Post-incident | 48 hours after production incident | Post-mortem complete |
 
 ---
@@ -458,6 +465,6 @@ For critical issues requiring immediate attention:
 
 ## Changelog
 
-| Date | Version | Changes |
-|------|---------|---------|
-| 2026-02-25 | 1.0.0 | Initial playbook document |
+| Date       | Version | Changes                   |
+| ---------- | ------- | ------------------------- |
+| 2026-02-25 | 1.0.0   | Initial playbook document |

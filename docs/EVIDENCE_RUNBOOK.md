@@ -4,12 +4,12 @@ This document defines the standard for evidence naming, storage, and minimum cap
 
 ## Quick Reference
 
-| Item | Value |
-|------|-------|
-| Storage Location | `.sisyphus/evidence/` |
-| Naming Format | `task-{N}-{scenario}.txt` |
-| Timestamp Format | ISO 8601 UTC (`%Y-%m-%dT%H:%M:%SZ`) |
-| Result Marker | `RESULT: PASSED` or `RESULT: FAILED` |
+| Item             | Value                                |
+| ---------------- | ------------------------------------ |
+| Storage Location | `.sisyphus/evidence/`                |
+| Naming Format    | `task-{N}-{scenario}.txt`            |
+| Timestamp Format | ISO 8601 UTC (`%Y-%m-%dT%H:%M:%SZ`)  |
+| Result Marker    | `RESULT: PASSED` or `RESULT: FAILED` |
 
 ## Naming Convention
 
@@ -108,16 +108,16 @@ RESULT: PASSED
 
 Evidence files for build tasks must capture:
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| Timestamp | Yes | Build start time in ISO 8601 UTC |
-| Image Name | Yes | Target image name and tag |
-| Build Context | Yes | Path to build context directory |
-| Build Log | Yes | Full docker build output |
-| Exit Code | Yes | Docker build exit code (0 = success) |
-| Duration | Yes | Build time in seconds |
-| Image Size | Yes | Final image size in bytes and human-readable format |
-| Result | Yes | PASSED or FAILED with reason |
+| Field         | Required | Description                                         |
+| ------------- | -------- | --------------------------------------------------- |
+| Timestamp     | Yes      | Build start time in ISO 8601 UTC                    |
+| Image Name    | Yes      | Target image name and tag                           |
+| Build Context | Yes      | Path to build context directory                     |
+| Build Log     | Yes      | Full docker build output                            |
+| Exit Code     | Yes      | Docker build exit code (0 = success)                |
+| Duration      | Yes      | Build time in seconds                               |
+| Image Size    | Yes      | Final image size in bytes and human-readable format |
+| Result        | Yes      | PASSED or FAILED with reason                        |
 
 **Example filename:** `task-06-build.txt`
 
@@ -125,18 +125,19 @@ Evidence files for build tasks must capture:
 
 Evidence files for test tasks must capture:
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| Timestamp | Yes | Test execution time in ISO 8601 UTC |
-| Image Name | Yes | Docker image being tested |
-| Container Name | Yes | Test container identifier |
-| Test Steps | Yes | Individual test step results |
-| Output | Yes | Relevant command output |
-| Summary | Yes | Total/passed/failed/skipped counts |
-| Duration | Yes | Test duration in seconds |
-| Result | Yes | PASSED or FAILED with counts |
+| Field          | Required | Description                         |
+| -------------- | -------- | ----------------------------------- |
+| Timestamp      | Yes      | Test execution time in ISO 8601 UTC |
+| Image Name     | Yes      | Docker image being tested           |
+| Container Name | Yes      | Test container identifier           |
+| Test Steps     | Yes      | Individual test step results        |
+| Output         | Yes      | Relevant command output             |
+| Summary        | Yes      | Total/passed/failed/skipped counts  |
+| Duration       | Yes      | Test duration in seconds            |
+| Result         | Yes      | PASSED or FAILED with counts        |
 
 **Example filenames:**
+
 - `task-06-startup.txt` - Container startup validation
 - `task-06-java.txt` - Java runtime availability
 - `task-06-persistence.txt` - Data persistence verification
@@ -145,14 +146,14 @@ Evidence files for test tasks must capture:
 
 Evidence files for policy/validation tasks must capture:
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| Timestamp | Yes | Validation time in ISO 8601 UTC |
-| Scope | Yes | What was validated |
-| Files Checked | Yes | List of files examined |
-| Violations | Yes | Any policy violations found |
-| Checks Performed | Yes | List of validation checks |
-| Result | Yes | PASSED or FAILED with details |
+| Field            | Required | Description                     |
+| ---------------- | -------- | ------------------------------- |
+| Timestamp        | Yes      | Validation time in ISO 8601 UTC |
+| Scope            | Yes      | What was validated              |
+| Files Checked    | Yes      | List of files examined          |
+| Violations       | Yes      | Any policy violations found     |
+| Checks Performed | Yes      | List of validation checks       |
+| Result           | Yes      | PASSED or FAILED with details   |
 
 **Example filename:** `task-12-operator.txt`
 
@@ -160,13 +161,13 @@ Evidence files for policy/validation tasks must capture:
 
 When running multiple tests in a suite:
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| Suite Name | Yes | Name of the test suite |
-| Timestamp | Yes | Suite start time |
-| Individual Results | Yes | Pass/fail for each test |
-| Summary | Yes | Aggregated totals |
-| Result | Yes | Overall suite result |
+| Field              | Required | Description             |
+| ------------------ | -------- | ----------------------- |
+| Suite Name         | Yes      | Name of the test suite  |
+| Timestamp          | Yes      | Suite start time        |
+| Individual Results | Yes      | Pass/fail for each test |
+| Summary            | Yes      | Aggregated totals       |
+| Result             | Yes      | Overall suite result    |
 
 **Example filename:** `task-06-all.txt`
 
@@ -209,12 +210,12 @@ Evidence should be captured as workflow artifacts:
   run: ./tests/run-all-smoke.sh
 
 - name: Upload Evidence
-  if: always()  # Upload even on failure
+  if: always() # Upload even on failure
   uses: actions/upload-artifact@v4
   with:
-    name: smoke-test-evidence
-    path: .sisyphus/evidence/
-    retention-days: 30
+      name: smoke-test-evidence
+      path: .sisyphus/evidence/
+      retention-days: 30
 ```
 
 ### Evidence Retention
@@ -322,10 +323,10 @@ fi
 
 ## Appendix: Current Evidence Files
 
-| Task | Scenario | Script | Description |
-|------|----------|--------|-------------|
-| T6 | build | `tests/smoke-build.sh` | Docker build verification |
-| T6 | startup | `tests/smoke-startup.sh` | Container startup and script validation |
-| T6 | java | `tests/smoke-java.sh` | Java 21/17/8 runtime availability |
-| T6 | persistence | `tests/smoke-persistence.sh` | Volume persistence across container recreation |
-| T6 | all | `tests/run-all-smoke.sh` | Aggregated smoke test suite results |
+| Task | Scenario    | Script                       | Description                                    |
+| ---- | ----------- | ---------------------------- | ---------------------------------------------- |
+| T6   | build       | `tests/smoke-build.sh`       | Docker build verification                      |
+| T6   | startup     | `tests/smoke-startup.sh`     | Container startup and script validation        |
+| T6   | java        | `tests/smoke-java.sh`        | Java 21/17/8 runtime availability              |
+| T6   | persistence | `tests/smoke-persistence.sh` | Volume persistence across container recreation |
+| T6   | all         | `tests/run-all-smoke.sh`     | Aggregated smoke test suite results            |

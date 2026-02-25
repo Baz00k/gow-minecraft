@@ -4,14 +4,14 @@ This document describes the tagging and release strategy for the GoW Prism Launc
 
 ## Tag Types
 
-| Tag | Description | When Published |
-|-----|-------------|----------------|
-| `latest` | Points to the highest semantic version | On version tag push (e.g., `v1.0.0`) |
-| `edge` | Latest main branch build | On push to `main` branch |
-| `v1.0.0` | Full semantic version | On tag push matching `v*` pattern |
-| `v1.0` | Major.minor version | On tag push matching `v*` pattern |
-| `v1` | Major version only | On tag push matching `v*` pattern |
-| `sha-abc123` | Commit SHA prefix | On any push to main or tag |
+| Tag          | Description                            | When Published                       |
+| ------------ | -------------------------------------- | ------------------------------------ |
+| `latest`     | Points to the highest semantic version | On version tag push (e.g., `v1.0.0`) |
+| `edge`       | Latest main branch build               | On push to `main` branch             |
+| `v1.0.0`     | Full semantic version                  | On tag push matching `v*` pattern    |
+| `v1.0`       | Major.minor version                    | On tag push matching `v*` pattern    |
+| `v1`         | Major version only                     | On tag push matching `v*` pattern    |
+| `sha-abc123` | Commit SHA prefix                      | On any push to main or tag           |
 
 ## Tagging Strategy
 
@@ -47,6 +47,7 @@ PR builds do **not** publish to the registry. They only validate the build succe
 ### Step 1: Ensure Quality
 
 Before creating a release:
+
 1. All tests pass on `main` branch
 2. The `edge` image has been validated
 3. Changelog is updated (if applicable)
@@ -77,11 +78,11 @@ gh release create v1.2.3 --title "v1.2.3" --notes "Release notes here"
 
 ## Branch Conventions
 
-| Branch | Purpose | Publishes |
-|--------|---------|-----------|
-| `main` | Stable development | `edge`, `sha-*` |
-| `develop` | Feature integration | No (PR validation only) |
-| `release/*` | Release preparation | No (PR validation only) |
+| Branch           | Purpose             | Publishes               |
+| ---------------- | ------------------- | ----------------------- |
+| `main`           | Stable development  | `edge`, `sha-*`         |
+| `develop`        | Feature integration | No (PR validation only) |
+| `release/*`      | Release preparation | No (PR validation only) |
 | Feature branches | Individual features | No (PR validation only) |
 
 ## Immutable Traceability
@@ -161,10 +162,10 @@ To roll back to a previous version:
 
 1. Identify the target version tag
 2. Create a new tag pointing to the same commit:
-   ```bash
-   git tag -a v1.2.4 <commit-sha> -m "Rollback to v1.2.3 state"
-   git push origin v1.2.4
-   ```
+    ```bash
+    git tag -a v1.2.4 <commit-sha> -m "Rollback to v1.2.3 state"
+    git push origin v1.2.4
+    ```
 3. Or use `latest` to point to an existing version by re-tagging
 
 **Note:** Never delete and re-create tags. Always create new version tags for rollbacks to maintain immutability.

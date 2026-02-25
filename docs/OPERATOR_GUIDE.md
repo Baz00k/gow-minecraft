@@ -21,41 +21,41 @@ This guide covers everything you need to run the GoW Prism Launcher container wi
 
 1. **NVIDIA Driver**
 
-   Install the proprietary NVIDIA driver (version 535 or newer recommended).
+    Install the proprietary NVIDIA driver (version 535 or newer recommended).
 
-   ```bash
-   # Ubuntu/Debian
-   sudo apt install nvidia-driver-535
+    ```bash
+    # Ubuntu/Debian
+    sudo apt install nvidia-driver-535
 
-   # Verify installation
-   nvidia-smi
-   ```
+    # Verify installation
+    nvidia-smi
+    ```
 
 2. **NVIDIA Container Toolkit**
 
-   This allows Docker containers to access your GPU.
+    This allows Docker containers to access your GPU.
 
-   ```bash
-   # Ubuntu/Debian
-   curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
-   curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-     sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-     sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+    ```bash
+    # Ubuntu/Debian
+    curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+    curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+      sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+      sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
-   sudo apt update
-   sudo apt install nvidia-container-toolkit
+    sudo apt update
+    sudo apt install nvidia-container-toolkit
 
-   # Configure Docker to use NVIDIA runtime
-   sudo nvidia-ctk runtime configure --runtime=docker
-   sudo systemctl restart docker
-   ```
+    # Configure Docker to use NVIDIA runtime
+    sudo nvidia-ctk runtime configure --runtime=docker
+    sudo systemctl restart docker
+    ```
 
 3. **Verify GPU Access**
 
-   ```bash
-   # Should list your GPU
-   docker run --rm --gpus all nvidia/cuda:12.0-base-ubuntu22.04 nvidia-smi
-   ```
+    ```bash
+    # Should list your GPU
+    docker run --rm --gpus all nvidia/cuda:12.0-base-ubuntu22.04 nvidia-smi
+    ```
 
 **Required device nodes:**
 
@@ -71,35 +71,35 @@ This guide covers everything you need to run the GoW Prism Launcher container wi
 
 1. **GPU Drivers**
 
-   AMD and Intel GPUs use Mesa drivers, typically pre-installed on most Linux distributions.
+    AMD and Intel GPUs use Mesa drivers, typically pre-installed on most Linux distributions.
 
-   ```bash
-   # Verify AMD driver is loaded
-   lsmod | grep amdgpu
+    ```bash
+    # Verify AMD driver is loaded
+    lsmod | grep amdgpu
 
-   # Verify Intel driver is loaded
-   lsmod | grep i915
-   ```
+    # Verify Intel driver is loaded
+    lsmod | grep i915
+    ```
 
 2. **Verify Device Nodes**
 
-   ```bash
-   # Should show renderD* devices
-   ls -la /dev/dri/
+    ```bash
+    # Should show renderD* devices
+    ls -la /dev/dri/
 
-   # Example output:
-   # crw-rw---- 1 root render 226, 128 Feb 25 10:00 renderD128
-   # crw-rw---- 1 root render 226, 129 Feb 25 10:00 renderD129
-   ```
+    # Example output:
+    # crw-rw---- 1 root render 226, 128 Feb 25 10:00 renderD128
+    # crw-rw---- 1 root render 226, 129 Feb 25 10:00 renderD129
+    ```
 
 3. **User Permissions**
 
-   Ensure your user is in the `render` and `video` groups:
+    Ensure your user is in the `render` and `video` groups:
 
-   ```bash
-   sudo usermod -aG render,video $USER
-   # Log out and back in for changes to take effect
-   ```
+    ```bash
+    sudo usermod -aG render,video $USER
+    # Log out and back in for changes to take effect
+    ```
 
 **Required device nodes:**
 
@@ -219,13 +219,13 @@ sudo systemctl restart wolf
 
 ### Configuration Notes
 
-| Setting | Purpose |
-|---------|---------|
-| `start_virtual_compositor = true` | Enables Sway Wayland compositor for the GUI |
-| `RUN_SWAY=1` | Tells the container to start the compositor |
-| `GOW_REQUIRED_DEVICES` | Device paths Wolf probes at container startup |
-| `DeviceCgroupRules c 13:*` | Input devices (`/dev/input/event*`) |
-| `DeviceCgroupRules c 244:*` | NVIDIA devices (NVIDIA config only) |
+| Setting                           | Purpose                                       |
+| --------------------------------- | --------------------------------------------- |
+| `start_virtual_compositor = true` | Enables Sway Wayland compositor for the GUI   |
+| `RUN_SWAY=1`                      | Tells the container to start the compositor   |
+| `GOW_REQUIRED_DEVICES`            | Device paths Wolf probes at container startup |
+| `DeviceCgroupRules c 13:*`        | Input devices (`/dev/input/event*`)           |
+| `DeviceCgroupRules c 244:*`       | NVIDIA devices (NVIDIA config only)           |
 
 ---
 
@@ -241,25 +241,23 @@ sudo systemctl restart wolf
 
 1. **Verify Wolf is running**
 
-   ```bash
-   sudo systemctl status wolf
-   ```
+    ```bash
+    sudo systemctl status wolf
+    ```
 
 2. **Pair your Moonlight client**
-
-   - Open Moonlight on your client device
-   - Add your host's IP address
-   - Enter the PIN shown on the host
+    - Open Moonlight on your client device
+    - Add your host's IP address
+    - Enter the PIN shown on the host
 
 3. **Launch Prism Launcher**
-
-   - Connect via Moonlight
-   - Select "Prism Launcher (Offline)" from your app list
-   - The Prism Launcher window appears
+    - Connect via Moonlight
+    - Select "Prism Launcher (Offline)" from your app list
+    - The Prism Launcher window appears
 
 4. **First-time setup happens inside the stream**
 
-   See [First-Time Setup](#first-time-setup) below.
+    See [First-Time Setup](#first-time-setup) below.
 
 ---
 
@@ -272,30 +270,30 @@ When you launch Prism Launcher for the first time, you'll see the setup wizard t
 1. **Language Selection** - Choose your preferred language
 
 2. **Java Detection** - Prism automatically detects the installed Java versions:
-   - Java 21 for Minecraft 1.21+
-   - Java 17 for Minecraft 1.18-1.20.4
-   - Java 8 for Minecraft 1.16 and below
+    - Java 21 for Minecraft 1.21+
+    - Java 17 for Minecraft 1.18-1.20.4
+    - Java 8 for Minecraft 1.16 and below
 
 3. **Account Setup** - Create an offline/local profile:
-   - Click "Add Account" or go to Accounts menu
-   - Select "Offline" or "Local" account type
-   - Enter your desired username (this appears in-game)
-   - No Microsoft login required
+    - Click "Add Account" or go to Accounts menu
+    - Select "Offline" or "Local" account type
+    - Enter your desired username (this appears in-game)
+    - No Microsoft login required
 
 ### Installing Minecraft
 
 1. **Create an Instance**
-   - Click "Create New Instance"
-   - Choose a Minecraft version
-   - Select mod loader if desired (Fabric, Forge, etc.)
+    - Click "Create New Instance"
+    - Choose a Minecraft version
+    - Select mod loader if desired (Fabric, Forge, etc.)
 
 2. **Download Game Files**
-   - Prism downloads the game files automatically
-   - This happens inside the container
+    - Prism downloads the game files automatically
+    - This happens inside the container
 
 3. **Launch and Play**
-   - Double-click your instance
-   - Minecraft launches inside the stream
+    - Double-click your instance
+    - Minecraft launches inside the stream
 
 ### Where Your Data Lives
 
@@ -338,11 +336,11 @@ docker run --rm gow-prism-offline:local java -version
 
 ### Build Arguments
 
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `BASE_APP_IMAGE` | `ghcr.io/games-on-whales/base-app:edge` | GoW base image |
-| `PRISM_LAUNCHER_VERSION` | `10.0.5` | Prism Launcher version |
-| `IMAGE_VERSION` | `dev` | Image version label |
+| Argument                 | Default                                 | Description            |
+| ------------------------ | --------------------------------------- | ---------------------- |
+| `BASE_APP_IMAGE`         | `ghcr.io/games-on-whales/base-app:edge` | GoW base image         |
+| `PRISM_LAUNCHER_VERSION` | `10.0.5`                                | Prism Launcher version |
+| `IMAGE_VERSION`          | `dev`                                   | Image version label    |
 
 ### Architecture Support
 
@@ -355,6 +353,7 @@ The Dockerfile supports both `amd64` (x86_64) and `arm64` (aarch64) architecture
 ### GPU Not Detected
 
 **Symptoms:**
+
 - Container starts but Minecraft has poor performance
 - Errors about missing GPU or fallback to software rendering
 
@@ -388,6 +387,7 @@ groups $USER
 ### Container Fails to Start
 
 **Symptoms:**
+
 - Wolf shows "Starting..." then fails
 - No window appears in Moonlight
 
@@ -395,32 +395,33 @@ groups $USER
 
 1. **Check container logs:**
 
-   ```bash
-   docker logs WolfPrismOffline-*
-   ```
+    ```bash
+    docker logs WolfPrismOffline-*
+    ```
 
 2. **Verify image exists:**
 
-   ```bash
-   docker images | grep gow-prism-offline
-   ```
+    ```bash
+    docker images | grep gow-prism-offline
+    ```
 
 3. **Check Wolf logs:**
 
-   ```bash
-   journalctl -u wolf -f
-   ```
+    ```bash
+    journalctl -u wolf -f
+    ```
 
 4. **Verify config syntax:**
 
-   ```bash
-   # TOML syntax check (requires python3-toml)
-   python3 -c "import toml; toml.load('/etc/wolf/cfg/config.toml')"
-   ```
+    ```bash
+    # TOML syntax check (requires python3-toml)
+    python3 -c "import toml; toml.load('/etc/wolf/cfg/config.toml')"
+    ```
 
 ### No Audio
 
 **Symptoms:**
+
 - Video works but no sound
 
 **Solutions:**
@@ -434,29 +435,31 @@ Wolf handles audio streaming automatically. If audio is missing:
 ### Input Not Working
 
 **Symptoms:**
+
 - Mouse/keyboard doesn't respond in the stream
 
 **Solutions:**
 
 1. **Verify input devices:**
 
-   ```bash
-   ls -la /dev/input/event*
-   ```
+    ```bash
+    ls -la /dev/input/event*
+    ```
 
 2. **Check uinput module:**
 
-   ```bash
-   lsmod | grep uinput
-   # If not loaded:
-   sudo modprobe uinput
-   ```
+    ```bash
+    lsmod | grep uinput
+    # If not loaded:
+    sudo modprobe uinput
+    ```
 
 3. **Verify DeviceCgroupRules** includes `c 13:* rmw` in your Wolf config
 
 ### Java Version Issues
 
 **Symptoms:**
+
 - Minecraft fails to launch with Java errors
 - "Unsupported class file version" errors
 
@@ -466,32 +469,34 @@ Prism Launcher auto-detects installed Java versions. If issues occur:
 
 1. **Check Java in container:**
 
-   ```bash
-   docker run --rm gow-prism-offline:local java -version
-   ```
+    ```bash
+    docker run --rm gow-prism-offline:local java -version
+    ```
 
 2. **Manual Java selection in Prism:**
-   - Go to Settings > Java
-   - Manually select the correct Java path for your Minecraft version
+    - Go to Settings > Java
+    - Manually select the correct Java path for your Minecraft version
 
 ### Data Not Persisting
 
 **Symptoms:**
+
 - Instances disappear after container restart
 
 **Solutions:**
 
 1. **Check Wolf profile data:**
 
-   ```bash
-   ls -la /etc/wolf/profile_data/
-   ```
+    ```bash
+    ls -la /etc/wolf/profile_data/
+    ```
 
 2. **Verify mounts** in Wolf config aren't overriding `/home/retro`
 
 ### Performance Issues
 
 **Symptoms:**
+
 - Low FPS
 - Stuttering or lag
 
@@ -499,23 +504,23 @@ Prism Launcher auto-detects installed Java versions. If issues occur:
 
 1. **Check GPU utilization:**
 
-   ```bash
-   # NVIDIA
-   nvidia-smi -l 1
+    ```bash
+    # NVIDIA
+    nvidia-smi -l 1
 
-   # AMD
-   watch -n 1 'cat /sys/class/drm/card*/device/gpu_busy_percent'
-   ```
+    # AMD
+    watch -n 1 'cat /sys/class/drm/card*/device/gpu_busy_percent'
+    ```
 
 2. **Adjust Wolf streaming settings:**
-   - Lower resolution or bitrate in Moonlight settings
-   - Try different encoder (NVENC vs VAAPI)
+    - Lower resolution or bitrate in Moonlight settings
+    - Try different encoder (NVENC vs VAAPI)
 
 3. **Check host resource usage:**
 
-   ```bash
-   htop
-   ```
+    ```bash
+    htop
+    ```
 
 ---
 

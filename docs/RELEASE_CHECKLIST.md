@@ -1,7 +1,7 @@
 # Release Checklist
 
-**Document Status:** Active  
-**Last Updated:** 2026-02-25  
+**Document Status:** Active
+**Last Updated:** 2026-02-25
 **Applies To:** GoW Prism Launcher Offline-Enabled Docker Image
 
 ---
@@ -67,15 +67,19 @@ Add release notes following [Keep a Changelog](https://keepachangelog.com/en/1.1
 ## [X.Y.Z] - YYYY-MM-DD
 
 ### Added
+
 - New feature description
 
 ### Changed
+
 - Updated dependency from A to B
 
 ### Fixed
+
 - Bug fix description
 
 ### Security
+
 - Security improvement description
 ```
 
@@ -116,6 +120,7 @@ git push origin v1.2.3
 ```
 
 **Tag naming rules:**
+
 - Must start with `v` (lowercase)
 - Must follow semver: `vX.Y.Z` where X, Y, Z are non-negative integers
 - Examples: `v1.0.0`, `v1.2.3`, `v2.0.0`
@@ -141,6 +146,7 @@ gh run watch
 ### 2. Verify Build Success
 
 The `Build and Publish Docker Image` workflow should:
+
 - Complete without errors
 - Show green checkmark for the tag push
 - Display image digest in the logs
@@ -148,6 +154,7 @@ The `Build and Publish Docker Image` workflow should:
 ### 3. Check Workflow Logs
 
 Expand the "Build and push Docker image" step and verify:
+
 - Build completed successfully
 - Push to GHCR succeeded
 - Expected tags were generated
@@ -166,13 +173,13 @@ Or directly: `https://github.com/YOUR_USERNAME/gow-prism-offline/pkgs/container/
 
 For version `v1.2.3`, the following tags should be present:
 
-| Tag | Description |
-|-----|-------------|
-| `1.2.3` | Full semver version |
-| `1.2` | Major.minor version |
-| `1` | Major version |
-| `latest` | Points to highest semver (auto) |
-| `sha-abc1234` | Commit SHA reference |
+| Tag           | Description                     |
+| ------------- | ------------------------------- |
+| `1.2.3`       | Full semver version             |
+| `1.2`         | Major.minor version             |
+| `1`           | Major version                   |
+| `latest`      | Points to highest semver (auto) |
+| `sha-abc1234` | Commit SHA reference            |
 
 ### 3. Pull and Verify Image
 

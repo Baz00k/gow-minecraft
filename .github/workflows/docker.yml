@@ -18,195 +18,195 @@
 name: Build and Publish Docker Image
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
+        tags:
+            - "v*"
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/gow-prism-offline
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository_owner }}/gow-prism-offline
 
 permissions:
-  contents: read
-  packages: write
-  id-token: write  # For OIDC token for buildx provenance
+    contents: read
+    packages: write
+    id-token: write # For OIDC token for buildx provenance
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    outputs:
-      metadata: ${{ steps.meta.outputs.json }}
-      primary-tag: ${{ steps.primary-tag.outputs.tag }}
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    build:
+        runs-on: ubuntu-latest
+        outputs:
+            metadata: ${{ steps.meta.outputs.json }}
+            primary-tag: ${{ steps.primary-tag.outputs.tag }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          install: true
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      # Extract metadata for Docker image tags and labels
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=edge,branch=main
-            type=sha,prefix=sha-
-          flavor: |
-            latest=auto
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+              with:
+                  install: true
 
-      - name: Set primary image tag
-        id: primary-tag
-        run: |
-          PRIMARY_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
-          echo "tag=${PRIMARY_TAG}" >> "$GITHUB_OUTPUT"
-          echo "Primary tag: ${PRIMARY_TAG}"
+            # Extract metadata for Docker image tags and labels
+            - name: Extract Docker metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=semver,pattern={{version}}
+                      type=semver,pattern={{major}}.{{minor}}
+                      type=semver,pattern={{major}}
+                      type=edge,branch=main
+                      type=sha,prefix=sha-
+                  flavor: |
+                      latest=auto
 
-      # Build the Docker image (do NOT push - smoke tests must pass first)
-      - name: Build Docker image
-        id: build
-        uses: docker/build-push-action@v6
-        with:
-          context: ./build
-          file: ./build/Dockerfile
-          platforms: linux/amd64
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          load: true
-          build-args: |
-            BASE_APP_IMAGE=ghcr.io/games-on-whales/base-app:edge@sha256:66cb03a499a78bd81e75aa89eb7b33d5ee679355a8dae24d2989b9fd56e46b04
-            PRISM_LAUNCHER_VERSION=10.0.5
-            PRISM_LAUNCHER_APPIMAGE_X86_64_URL=https://github.com/Diegiwg/PrismLauncher-Cracked/releases/download/10.0.5/PrismLauncher-Linux-x86_64.AppImage
-            PRISM_LAUNCHER_APPIMAGE_X86_64_SHA256=8e1eb0e97967fc49cfd28066b0e64d30eaa831cfa311db1cbf81aebdd5f0dbba
-            PRISM_LAUNCHER_APPIMAGE_AARCH64_URL=https://github.com/Diegiwg/PrismLauncher-Cracked/releases/download/10.0.5/PrismLauncher-Linux-aarch64.AppImage
-            PRISM_LAUNCHER_APPIMAGE_AARCH64_SHA256=63731437ade51447256837066b349a2f693a8cc147c178658793eac8f4a6d282
-            IMAGE_SOURCE=https://github.com/${{ github.repository }}
-            IMAGE_VERSION=${{ steps.meta.outputs.version }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          provenance: false
-          sbom: false
+            - name: Set primary image tag
+              id: primary-tag
+              run: |
+                  PRIMARY_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
+                  echo "tag=${PRIMARY_TAG}" >> "$GITHUB_OUTPUT"
+                  echo "Primary tag: ${PRIMARY_TAG}"
 
-      - name: Save Docker image to tarball
-        run: |
-          docker save -o /tmp/image.tar "${{ steps.primary-tag.outputs.tag }}"
-      - name: Upload image artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-image
-          path: /tmp/image.tar
-          retention-days: 1
-          if-no-files-found: error
+            # Build the Docker image (do NOT push - smoke tests must pass first)
+            - name: Build Docker image
+              id: build
+              uses: docker/build-push-action@v6
+              with:
+                  context: ./build
+                  file: ./build/Dockerfile
+                  platforms: linux/amd64
+                  push: false
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  load: true
+                  build-args: |
+                      BASE_APP_IMAGE=ghcr.io/games-on-whales/base-app:edge@sha256:66cb03a499a78bd81e75aa89eb7b33d5ee679355a8dae24d2989b9fd56e46b04
+                      PRISM_LAUNCHER_VERSION=10.0.5
+                      PRISM_LAUNCHER_APPIMAGE_X86_64_URL=https://github.com/Diegiwg/PrismLauncher-Cracked/releases/download/10.0.5/PrismLauncher-Linux-x86_64.AppImage
+                      PRISM_LAUNCHER_APPIMAGE_X86_64_SHA256=8e1eb0e97967fc49cfd28066b0e64d30eaa831cfa311db1cbf81aebdd5f0dbba
+                      PRISM_LAUNCHER_APPIMAGE_AARCH64_URL=https://github.com/Diegiwg/PrismLauncher-Cracked/releases/download/10.0.5/PrismLauncher-Linux-aarch64.AppImage
+                      PRISM_LAUNCHER_APPIMAGE_AARCH64_SHA256=63731437ade51447256837066b349a2f693a8cc147c178658793eac8f4a6d282
+                      IMAGE_SOURCE=https://github.com/${{ github.repository }}
+                      IMAGE_VERSION=${{ steps.meta.outputs.version }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  provenance: false
+                  sbom: false
 
-      - name: Output image digest
-        run: echo "Built image digest ${{ steps.build.outputs.digest }}"
+            - name: Save Docker image to tarball
+              run: |
+                  docker save -o /tmp/image.tar "${{ steps.primary-tag.outputs.tag }}"
+            - name: Upload image artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: docker-image
+                  path: /tmp/image.tar
+                  retention-days: 1
+                  if-no-files-found: error
 
-      # For PRs, show what tags were generated
-      - name: Show image tags (PR)
-        if: github.event_name == 'pull_request'
-        run: |
-          echo "::notice::PR build completed - image NOT published (smoke tests pending)"
-          echo "Tags generated:"
-          echo "${{ steps.meta.outputs.tags }}"
+            - name: Output image digest
+              run: echo "Built image digest ${{ steps.build.outputs.digest }}"
 
-  # ============================================================================
-  # Smoke Test Job - Gates publish, runs on all triggers
-  # ============================================================================
-  smoke-test:
-    needs: build
-    runs-on: ubuntu-latest
+            # For PRs, show what tags were generated
+            - name: Show image tags (PR)
+              if: github.event_name == 'pull_request'
+              run: |
+                  echo "::notice::PR build completed - image NOT published (smoke tests pending)"
+                  echo "Tags generated:"
+                  echo "${{ steps.meta.outputs.tags }}"
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    # ============================================================================
+    # Smoke Test Job - Gates publish, runs on all triggers
+    # ============================================================================
+    smoke-test:
+        needs: build
+        runs-on: ubuntu-latest
 
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image
-          path: /tmp
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Load Docker image
-        run: |
-          docker load --input /tmp/image.tar
-          echo "Loaded image:"
-          docker images --filter=reference='*/gow-prism-offline*'
+            - name: Download image artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: docker-image
+                  path: /tmp
 
-      - name: Run smoke tests
-        env:
-          SKIP_BUILD: "true"
-          IMAGE_NAME: ${{ needs.build.outputs.primary-tag }}
-        run: |
-          echo "Running smoke tests against: ${IMAGE_NAME}"
-          chmod +x tests/run-all-smoke.sh
-          ./tests/run-all-smoke.sh
+            - name: Load Docker image
+              run: |
+                  docker load --input /tmp/image.tar
+                  echo "Loaded image:"
+                  docker images --filter=reference='*/gow-prism-offline*'
 
-      - name: Upload smoke test evidence (on failure)
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: smoke-test-evidence
-          path: .sisyphus/evidence/
-          retention-days: 7
-          if-no-files-found: warn
+            - name: Run smoke tests
+              env:
+                  SKIP_BUILD: "true"
+                  IMAGE_NAME: ${{ needs.build.outputs.primary-tag }}
+              run: |
+                  echo "Running smoke tests against: ${IMAGE_NAME}"
+                  chmod +x tests/run-all-smoke.sh
+                  ./tests/run-all-smoke.sh
 
-  # ============================================================================
-  # Publish Job - Only runs after smoke tests pass
-  # ============================================================================
-  publish:
-    needs: smoke-test
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request'
+            - name: Upload smoke test evidence (on failure)
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: smoke-test-evidence
+                  path: .sisyphus/evidence/
+                  retention-days: 7
+                  if-no-files-found: warn
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    # ============================================================================
+    # Publish Job - Only runs after smoke tests pass
+    # ============================================================================
+    publish:
+        needs: smoke-test
+        runs-on: ubuntu-latest
+        if: github.event_name != 'pull_request'
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
 
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image
-          path: /tmp
+            - name: Log in to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Load and push Docker image
-        env:
-          METADATA: ${{ needs.build.outputs.metadata }}
-        run: |
-          docker load --input /tmp/image.tar
-          echo "Pushing all tags..."
-          # Push each tag individually for reliability
-          echo "${METADATA}" | jq -r '.tags[]' | while read -r tag; do
-            echo "Pushing: ${tag}"
-            docker push "${tag}"
-          done
+            - name: Download image artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: docker-image
+                  path: /tmp
 
-      - name: Output published tags
-        env:
-          METADATA: ${{ needs.build.outputs.metadata }}
-        run: |
-          echo "::notice::Image published successfully"
-          echo "Tags pushed:"
-          echo "${METADATA}" | jq -r '.tags[]'
+            - name: Load and push Docker image
+              env:
+                  METADATA: ${{ needs.build.outputs.metadata }}
+              run: |
+                  docker load --input /tmp/image.tar
+                  echo "Pushing all tags..."
+                  # Push each tag individually for reliability
+                  echo "${METADATA}" | jq -r '.tags[]' | while read -r tag; do
+                    echo "Pushing: ${tag}"
+                    docker push "${tag}"
+                  done
+
+            - name: Output published tags
+              env:
+                  METADATA: ${{ needs.build.outputs.metadata }}
+              run: |
+                  echo "::notice::Image published successfully"
+                  echo "Tags pushed:"
+                  echo "${METADATA}" | jq -r '.tags[]'

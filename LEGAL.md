@@ -9,6 +9,7 @@ This project provides a **launcher container only**. No Minecraft game assets, b
 **Users are expected to own a legitimate Minecraft license for gameplay.**
 
 This project does NOT provide:
+
 - Minecraft game files
 - Minecraft authentication credentials
 - Methods to bypass Mojang/Microsoft authentication servers
@@ -32,9 +33,9 @@ Offline profiles do NOT require authentication but are limited to environments w
 
 For security and legal reasons, the following launchers are **FORBIDDEN** and will NOT be supported:
 
-| Launcher | Reason |
-|----------|--------|
-| TLauncher | Security concerns, unauthorized distribution |
+| Launcher   | Reason                                       |
+| ---------- | -------------------------------------------- |
+| TLauncher  | Security concerns, unauthorized distribution |
 | SKLauncher | Security concerns, unauthorized distribution |
 
 Users attempting to integrate these launchers with this project will receive no support.
