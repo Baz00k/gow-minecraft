@@ -167,7 +167,9 @@ jobs:
     # Publish Job - Only runs after smoke tests pass
     # ============================================================================
     publish:
-        needs: smoke-test
+        needs:
+            - build
+            - smoke-test
         runs-on: ubuntu-latest
         if: github.event_name != 'pull_request'
 
@@ -195,8 +197,13 @@ jobs:
               env:
                   METADATA: ${{ needs.build.outputs.metadata }}
               run: |
+                  set -euo pipefail
                   docker load --input /tmp/image.tar
                   echo "Pushing all tags..."
+                  if [ -z "${METADATA:-}" ]; then
+                    echo "ERROR: Build metadata is empty; refusing to publish without tags."
+                    exit 1
+                  fi
                   # Push each tag individually for reliability
                   echo "${METADATA}" | jq -r '.tags[]' | while read -r tag; do
                     echo "Pushing: ${tag}"
@@ -207,6 +214,11 @@ jobs:
               env:
                   METADATA: ${{ needs.build.outputs.metadata }}
               run: |
+                  set -euo pipefail
+                  if [ -z "${METADATA:-}" ]; then
+                    echo "ERROR: Build metadata is empty; no tags to report."
+                    exit 1
+                  fi
                   echo "::notice::Image published successfully"
                   echo "Tags pushed:"
                   echo "${METADATA}" | jq -r '.tags[]'
