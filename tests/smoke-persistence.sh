@@ -81,7 +81,7 @@ log_info "Volume directory: ${VOLUME_DIR}"
 # =============================================================================
 log_info "Starting first container and writing test data..."
 
-docker run -d --name "${CONTAINER_1}" \
+docker run -d --entrypoint "" --name "${CONTAINER_1}" \
     -v "${VOLUME_DIR}:/home/retro/persistence-test" \
     "${IMAGE_NAME}" sleep infinity > /dev/null
 
@@ -126,7 +126,7 @@ docker rm -f "${CONTAINER_1}" > /dev/null
 # =============================================================================
 log_info "Starting second container to verify persistence..."
 
-docker run -d --name "${CONTAINER_2}" \
+docker run -d --entrypoint "" --name "${CONTAINER_2}" \
     -v "${VOLUME_DIR}:/home/retro/persistence-test" \
     "${IMAGE_NAME}" sleep infinity > /dev/null
 

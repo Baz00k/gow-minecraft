@@ -67,7 +67,7 @@ fi
 # Test 1: Container can be created and started
 log_info "Starting container with sleep command..."
 set +e
-docker run -d --name "${CONTAINER_NAME}" "${IMAGE_NAME}" sleep infinity
+docker run -d --entrypoint "" --name "${CONTAINER_NAME}" "${IMAGE_NAME}" sleep infinity
 RUN_EXIT_CODE=$?
 set -e
 

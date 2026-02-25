@@ -70,7 +70,7 @@ fi
 
 # Start container
 log_info "Starting container for Java tests..."
-docker run -d --name "${CONTAINER_NAME}" "${IMAGE_NAME}" sleep infinity > /dev/null
+docker run -d --entrypoint "" --name "${CONTAINER_NAME}" "${IMAGE_NAME}" sleep infinity > /dev/null
 
 # Wait for container to be ready
 sleep 2
