@@ -26,6 +26,7 @@ fi
 IMAGE_NAME="${IMAGE_NAME:-gow-prism-offline:test}"
 BUILD_TIMEOUT="${BUILD_TIMEOUT:-600}"
 BUILD_CONTEXT="${1:-$(dirname "$0")/../build}"
+PINS_FILE="${PINS_FILE:-$(dirname "$0")/../build/pins.env}"
 EVIDENCE_DIR="$(dirname "$0")/../.sisyphus/evidence"
 EVIDENCE_FILE="${EVIDENCE_DIR}/task-6-build.txt"
 
@@ -73,6 +74,16 @@ if [[ ! -f "${BUILD_CONTEXT}/Dockerfile" ]]; then
     exit 1
 fi
 
+if [[ ! -f "${PINS_FILE}" ]]; then
+    log_error "Pins file not found: ${PINS_FILE}"
+    echo "ERROR: pins file not found" >> "${EVIDENCE_FILE}"
+    exit 1
+fi
+
+set -a
+source "${PINS_FILE}"
+set +a
+
 log_info "Building Docker image: ${IMAGE_NAME}"
 log_info "Build context: ${BUILD_CONTEXT}"
 log_info "Timeout: ${BUILD_TIMEOUT}s"
@@ -83,7 +94,13 @@ BUILD_LOG=$(mktemp)
 
 set +e
 timeout "${BUILD_TIMEOUT}" docker build \
-    --build-arg BASE_APP_IMAGE=ghcr.io/games-on-whales/base-app:edge \
+    --platform linux/amd64 \
+    --build-arg BASE_APP_IMAGE="${BASE_APP_IMAGE}" \
+    --build-arg PRISM_LAUNCHER_VERSION="${PRISM_LAUNCHER_VERSION}" \
+    --build-arg PRISM_LAUNCHER_APPIMAGE_X86_64_URL="${PRISM_LAUNCHER_APPIMAGE_X86_64_URL}" \
+    --build-arg PRISM_LAUNCHER_APPIMAGE_X86_64_SHA256="${PRISM_LAUNCHER_APPIMAGE_X86_64_SHA256}" \
+    --build-arg PRISM_LAUNCHER_APPIMAGE_AARCH64_URL="${PRISM_LAUNCHER_APPIMAGE_AARCH64_URL}" \
+    --build-arg PRISM_LAUNCHER_APPIMAGE_AARCH64_SHA256="${PRISM_LAUNCHER_APPIMAGE_AARCH64_SHA256}" \
     -t "${IMAGE_NAME}" \
     "${BUILD_CONTEXT}" 2>&1 | tee "${BUILD_LOG}"
 BUILD_EXIT_CODE=${PIPESTATUS[0]}

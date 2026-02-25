@@ -162,6 +162,19 @@ if [[ "${XDG_RUNTIME}" != "/tmp/.X11-unix" ]]; then
     exit 1
 fi
 
+log_info "Checking prismlauncher target path..."
+PRISM_PATH=$(docker exec "${CONTAINER_NAME}" readlink -f /usr/local/bin/prismlauncher)
+{
+    echo "=== Prism Launcher Path ==="
+    echo "Path: ${PRISM_PATH}"
+} >> "${EVIDENCE_FILE}"
+
+if [[ "${PRISM_PATH}" != "/opt/prismlauncher/squashfs-root/AppRun" ]]; then
+    log_error "prismlauncher does not point to extracted AppRun: ${PRISM_PATH}"
+    echo "RESULT: FAILED (prismlauncher path)" >> "${EVIDENCE_FILE}"
+    exit 1
+fi
+
 echo "RESULT: PASSED" >> "${EVIDENCE_FILE}"
 
 log_info "All startup tests passed"

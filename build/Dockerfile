@@ -13,7 +13,7 @@
 # Build: docker build --build-arg BASE_APP_IMAGE=ghcr.io/games-on-whales/base-app:edge@sha256:xxx -t gow-prism-offline .
 # =============================================================================
 
-ARG BASE_APP_IMAGE=ghcr.io/games-on-whales/base-app:edge
+ARG BASE_APP_IMAGE=ghcr.io/games-on-whales/base-app:edge@sha256:66cb03a499a78bd81e75aa89eb7b33d5ee679355a8dae24d2989b9fd56e46b04
 
 # hadolint ignore=DL3006
 FROM ${BASE_APP_IMAGE}
@@ -49,7 +49,6 @@ RUN apt-get update && \
 # This fork removes the MSA gate check, enabling offline account creation
 # without requiring a Microsoft account first.
 #
-# Installation method: Download AppImage, verify SHA256, symlink to PATH
 # See: https://github.com/Diegiwg/PrismLauncher-Cracked
 # =============================================================================
 
@@ -66,7 +65,6 @@ ARG TARGETARCH
 
 # Install Prism Launcher AppImage
 # Downloads the appropriate AppImage for the target architecture,
-# verifies the SHA256 checksum, and creates a symlink for the binary.
 RUN set -eux; \
     # Select the correct AppImage URL and checksum based on architecture \
     case "${TARGETARCH}" in \
@@ -91,8 +89,13 @@ RUN set -eux; \
     echo "${APPIMAGE_SHA256}  /opt/prismlauncher/PrismLauncher.AppImage" | sha256sum -c -; \
     # Make executable \
     chmod +x /opt/prismlauncher/PrismLauncher.AppImage; \
+    cd /opt/prismlauncher; \
+    ./PrismLauncher.AppImage --appimage-extract > /dev/null; \
+    test -f /opt/prismlauncher/squashfs-root/AppRun; \
+    chmod +x /opt/prismlauncher/squashfs-root/AppRun; \
+    test -x /opt/prismlauncher/squashfs-root/AppRun; \
     # Create symlink so 'prismlauncher' is in PATH \
-    ln -s /opt/prismlauncher/PrismLauncher.AppImage /usr/local/bin/prismlauncher
+    ln -sf /opt/prismlauncher/squashfs-root/AppRun /usr/local/bin/prismlauncher
 
 # =============================================================================
 # Startup Script
