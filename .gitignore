@@ -105,3 +105,6 @@ $RECYCLE.BIN/
 
 # Sisyphus planning
 .sisyphus/
+
+# Local test outputs
+test-results/

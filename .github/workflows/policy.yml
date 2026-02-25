@@ -1,16 +1,3 @@
-# =============================================================================
-# Policy Check Workflow
-# =============================================================================
-# Runs automated policy checks for forbidden launcher sources and unsafe patterns.
-# This workflow ensures:
-# - No forbidden launcher names (TLauncher, SKLauncher) are referenced
-# - Image references use digest pins, not floating tags
-# - Binary downloads are verified with checksums
-# - No hardcoded credentials/secrets
-#
-# See: docs/PINNING_POLICY.md for full policy details
-# =============================================================================
-
 name: Policy Check
 
 on:
@@ -23,7 +10,7 @@ on:
         branches:
             - main
             - develop
-    workflow_dispatch: # Allow manual triggering
+    workflow_dispatch:
 
 jobs:
     policy-check:
@@ -48,13 +35,10 @@ jobs:
               with:
                   name: policy-check-results
                   path: |
-                      .sisyphus/evidence/
+                      test-results/evidence/
                   retention-days: 7
                   if-no-files-found: ignore
 
-    # Optional: Add to main CI workflow as a dependency
-    # This job can be referenced by other workflows using:
-    # needs: policy-check
     policy-status:
         name: Policy Status
         runs-on: ubuntu-latest

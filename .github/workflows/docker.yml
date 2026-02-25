@@ -1,20 +1,3 @@
-# =============================================================================
-# GoW Prism Launcher Offline - Docker Build and Publish Workflow
-# =============================================================================
-# Builds and publishes Docker images to GitHub Container Registry (GHCR).
-#
-# Pipeline:
-#   Build → Smoke Test → Publish (gated)
-#
-# Trigger behavior:
-# - Pull Request: Builds and tests image (no publish)
-# - Push to main: Builds, tests, and publishes with 'edge' tag
-# - Tag push (v*): Builds, tests, and publishes with semver tags + 'latest'
-#
-# Smoke tests are REQUIRED gates - publish only proceeds after tests pass.
-#
-# =============================================================================
-
 name: Build and Publish Docker Image
 
 on:
@@ -34,7 +17,7 @@ env:
 permissions:
     contents: read
     packages: write
-    id-token: write # For OIDC token for buildx provenance
+    id-token: write
 
 jobs:
     build:
@@ -52,7 +35,6 @@ jobs:
               with:
                   install: true
 
-            # Extract metadata for Docker image tags and labels
             - name: Extract Docker metadata
               id: meta
               uses: docker/metadata-action@v5
@@ -74,7 +56,6 @@ jobs:
                   echo "tag=${PRIMARY_TAG}" >> "$GITHUB_OUTPUT"
                   echo "Primary tag: ${PRIMARY_TAG}"
 
-            # Build the Docker image (do NOT push - smoke tests must pass first)
             - name: Build Docker image
               id: build
               uses: docker/build-push-action@v6
@@ -103,6 +84,7 @@ jobs:
             - name: Save Docker image to tarball
               run: |
                   docker save -o /tmp/image.tar "${{ steps.primary-tag.outputs.tag }}"
+
             - name: Upload image artifact
               uses: actions/upload-artifact@v4
               with:
@@ -114,7 +96,6 @@ jobs:
             - name: Output image digest
               run: echo "Built image digest ${{ steps.build.outputs.digest }}"
 
-            # For PRs, show what tags were generated
             - name: Show image tags (PR)
               if: github.event_name == 'pull_request'
               run: |
@@ -122,9 +103,6 @@ jobs:
                   echo "Tags generated:"
                   echo "${{ steps.meta.outputs.tags }}"
 
-    # ============================================================================
-    # Smoke Test Job - Gates publish, runs on all triggers
-    # ============================================================================
     smoke-test:
         needs: build
         runs-on: ubuntu-latest
@@ -159,13 +137,10 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: smoke-test-evidence
-                  path: .sisyphus/evidence/
+                  path: test-results/evidence/
                   retention-days: 7
                   if-no-files-found: warn
 
-    # ============================================================================
-    # Publish Job - Only runs after smoke tests pass
-    # ============================================================================
     publish:
         needs:
             - build
@@ -209,7 +184,6 @@ jobs:
                     echo "ERROR: Primary tag is empty; cannot retag loaded image."
                     exit 1
                   fi
-                  # Push each tag individually for reliability
                   echo "${METADATA}" | jq -r '.tags[]' | while read -r tag; do
                     if [ "${tag}" != "${PRIMARY_TAG}" ]; then
                       echo "Tagging ${PRIMARY_TAG} as ${tag}"
