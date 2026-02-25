@@ -1,0 +1,48 @@
+# =============================================================================
+# Docker Build Context Exclusions
+# =============================================================================
+# This file reduces build context size and prevents sensitive/unnecessary
+# files from being included in the Docker build.
+# =============================================================================
+
+# Version control
+.git/
+.gitignore
+
+# Development and planning (contains sensitive context)
+.sisyphus/
+
+# Documentation (not needed at runtime)
+docs/
+*.md
+!README.md  # Keep README for labels if needed
+
+# Configuration files (Wolf templates are separate)
+config/
+
+# Test files
+tests/
+
+# Editor/IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment files (may contain secrets)
+.env
+.env.*
+*.env.local
+
+# Build artifacts
+*.log
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# GitHub workflows (not needed in image)
+.github/

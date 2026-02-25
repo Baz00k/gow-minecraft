@@ -1,0 +1,91 @@
+# Wolf App Configuration for Prism Launcher (Offline) - AMD/Intel GPU
+# =============================================================================
+# Copy this app definition into your Wolf config.toml under a profile section.
+# See: https://games-on-whales.github.io/wolf/stable/user/configuration.html
+#
+# Usage:
+#   1. Replace YOUR-USER in the image path with your GitHub username or org
+#   2. Ensure AMD/Intel GPU drivers (amdgpu/i915) are loaded on the host
+#   3. Ensure /dev/dri/renderD* devices exist
+#   4. Add this app block to your [[profiles]] section in /etc/wolf/cfg/config.toml
+
+[[profiles.apps]]
+title = "Prism Launcher (Offline)"
+# The virtual compositor (Sway) provides Wayland desktop for the GUI app
+start_virtual_compositor = true
+# Optional: Custom icon - replace with your own or use a URL
+# icon_png_path = "https://example.com/prism-icon.png"
+
+[profiles.apps.runner]
+type = "docker"
+# Container name prefix - Wolf will append a session ID
+name = "WolfPrismOffline"
+# Replace YOUR-USER with your GitHub username or organization
+# Tags: latest, or semver like v1.0.0
+image = "ghcr.io/YOUR-USER/gow-prism-offline:latest"
+
+# Environment variables for the container
+env = [
+    # Enable Sway compositor for Wayland support
+    "RUN_SWAY=1",
+    # Required devices for input and DRM/KMS (AMD/Intel GPU)
+    # These are probed at container startup by GoW's device detection
+    # Note: No /dev/nvidia* - this template is for AMD/Intel only
+    "GOW_REQUIRED_DEVICES=/dev/input/event* /dev/dri/*",
+]
+
+# Additional host paths to mount into the container
+# Wolf automatically mounts the profile data folder as /home/retro
+# Add any game libraries or data you want to share here
+mounts = []
+
+# Host devices to pass through (typically handled by GOW_REQUIRED_DEVICES)
+devices = []
+
+# Port mappings (none needed - Wolf handles streaming)
+ports = []
+
+# Docker API configuration as JSON
+# This configures the container's host-level settings
+base_create_json = '''
+{
+  "HostConfig": {
+    "IpcMode": "host",
+    "CapAdd": ["NET_RAW", "MKNOD", "NET_ADMIN", "SYS_ADMIN", "SYS_NICE"],
+    "Privileged": false,
+    "DeviceCgroupRules": [
+      "c 13:* rmw"
+    ]
+  }
+}
+'''
+
+# =============================================================================
+# Configuration Notes:
+# =============================================================================
+#
+# Device Cgroup Rules:
+#   - c 13:* rmw  : Input subsystem devices (/dev/input/event*)
+#
+# AMD/Intel GPU Notes:
+#   - AMD: Uses amdgpu driver, devices at /dev/dri/renderD*
+#   - Intel: Uses i915 driver, devices at /dev/dri/renderD*
+#   - No special cgroup rules needed beyond input devices
+#   - DRM/KMS access handled via /dev/dri/* in GOW_REQUIRED_DEVICES
+#
+# Multiple GPUs:
+#   - Use WOLF_RENDER_NODE env var to select specific GPU
+#   - Default: /dev/dri/renderD128
+#   - Check with: ls -l /sys/class/drm/renderD*/device/driver
+#
+# VAAPI Support:
+#   - AMD: VAAPI encoding uses amf or vaapi plugins
+#   - Intel: VAAPI encoding uses vaapi plugins (QuickSync)
+#   - Configured in Wolf's gstreamer section, not here
+#
+# Persistence:
+#   - Wolf mounts profile data at /home/retro inside the container
+#   - Prism instances and Minecraft data persist across sessions
+#   - Located at: /etc/wolf/profile_data/{profile_id}/Prism Launcher (Offline)
+#
+# =============================================================================

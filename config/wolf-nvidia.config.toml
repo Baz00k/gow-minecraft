@@ -1,0 +1,86 @@
+# Wolf App Configuration for Prism Launcher (Offline) - NVIDIA GPU
+# =============================================================================
+# Copy this app definition into your Wolf config.toml under a profile section.
+# See: https://games-on-whales.github.io/wolf/stable/user/configuration.html
+#
+# Usage:
+#   1. Replace YOUR-USER in the image path with your GitHub username or org
+#   2. Ensure NVIDIA drivers are installed on the host
+#   3. Ensure the nvidia-driver-vol Docker volume exists (Wolf creates this)
+#   4. Add this app block to your [[profiles]] section in /etc/wolf/cfg/config.toml
+
+[[profiles.apps]]
+title = "Prism Launcher (Offline)"
+# The virtual compositor (Sway) provides Wayland desktop for the GUI app
+start_virtual_compositor = true
+# Optional: Custom icon - replace with your own or use a URL
+# icon_png_path = "https://example.com/prism-icon.png"
+
+[profiles.apps.runner]
+type = "docker"
+# Container name prefix - Wolf will append a session ID
+name = "WolfPrismOffline"
+# Replace YOUR-USER with your GitHub username or organization
+# Tags: latest, or semver like v1.0.0
+image = "ghcr.io/YOUR-USER/gow-prism-offline:latest"
+
+# Environment variables for the container
+env = [
+    # Enable Sway compositor for Wayland support
+    "RUN_SWAY=1",
+    # Required devices for input, DRM/KMS, and NVIDIA GPU
+    # These are probed at container startup by GoW's device detection
+    "GOW_REQUIRED_DEVICES=/dev/input/event* /dev/dri/* /dev/nvidia*",
+]
+
+# Additional host paths to mount into the container
+# Wolf automatically mounts the profile data folder as /home/retro
+# Add any game libraries or data you want to share here
+mounts = []
+
+# Host devices to pass through (typically handled by GOW_REQUIRED_DEVICES)
+devices = []
+
+# Port mappings (none needed - Wolf handles streaming)
+ports = []
+
+# Docker API configuration as JSON
+# This configures the container's host-level settings
+base_create_json = '''
+{
+  "HostConfig": {
+    "IpcMode": "host",
+    "CapAdd": ["NET_RAW", "MKNOD", "NET_ADMIN", "SYS_ADMIN", "SYS_NICE"],
+    "Privileged": false,
+    "DeviceCgroupRules": [
+      "c 13:* rmw",
+      "c 244:* rmw"
+    ]
+  }
+}
+'''
+
+# =============================================================================
+# Configuration Notes:
+# =============================================================================
+#
+# Device Cgroup Rules:
+#   - c 13:* rmw  : Input subsystem devices (/dev/input/event*)
+#   - c 244:* rmw  : NVIDIA GPU devices (/dev/nvidia*)
+#
+# NVIDIA Requirements:
+#   - Host must have NVIDIA drivers installed
+#   - nvidia-driver-vol Docker volume (auto-created by Wolf)
+#   - nvidia-container-toolkit on the host
+#
+# GPU Detection:
+#   - GOW_REQUIRED_DEVICES tells GoW which device paths to probe
+#   - /dev/dri/* for DRM/KMS (required for all GPUs)
+#   - /dev/nvidia* for NVIDIA-specific devices
+#
+# Persistence:
+#   - Wolf mounts profile data at /home/retro inside the container
+#   - Prism instances and Minecraft data persist across sessions
+#   - Located at: /etc/wolf/profile_data/{profile_id}/Prism Launcher (Offline)
+#
+# =============================================================================

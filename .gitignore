@@ -1,0 +1,55 @@
+# Sisyphus planning
+.sisyphus/
+
+# Environment files (secrets)
+*.env
+.env*
+
+# Exception: build/pins.env is tracked configuration
+!build/pins.env
+
+# Dependencies
+__pycache__/
+*.pyc
+vendor/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+logs/
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Build artifacts
+dist/
+# build/ - NOT ignored, contains Dockerfile and pins.env
+target/
+*.o
+*.class
+
+# Docker
+.docker/
+
+# Test coverage
+coverage/
+.nyc_output/
+htmlcov/
+.coverage
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
