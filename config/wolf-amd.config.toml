@@ -4,10 +4,9 @@
 # See: https://games-on-whales.github.io/wolf/stable/user/configuration.html
 #
 # Usage:
-#   1. Replace YOUR-USER in the image path with your GitHub username or org
-#   2. Ensure AMD/Intel GPU drivers (amdgpu/i915) are loaded on the host
-#   3. Ensure /dev/dri/renderD* devices exist
-#   4. Add this app block to your [[profiles]] section in /etc/wolf/cfg/config.toml
+#   1. Ensure AMD/Intel GPU drivers (amdgpu/i915) are loaded on the host
+#   2. Ensure /dev/dri/renderD* devices exist
+#   3. Add this app block to your [[profiles]] section in /etc/wolf/cfg/config.toml
 
 [[profiles.apps]]
 title = "Prism Launcher (Offline)"
@@ -20,9 +19,7 @@ start_virtual_compositor = true
 type = "docker"
 # Container name prefix - Wolf will append a session ID
 name = "WolfPrismOffline"
-# Replace YOUR-USER with your GitHub username or organization
-# Tags: latest, or semver like v1.0.0
-image = "ghcr.io/YOUR-USER/gow-prism-offline:latest"
+image = "ghcr.io/Baz00k/gow-prism-offline:edge"
 
 # Environment variables for the container
 env = [
