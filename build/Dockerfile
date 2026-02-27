@@ -119,21 +119,12 @@ ENV XDG_RUNTIME_DIR=/tmp/.X11-unix
 # Standard OCI labels for image metadata and provenance
 # See: https://github.com/opencontainers/image-spec/blob/main/annotations.md
 
-ARG IMAGE_SOURCE="https://github.com/games-on-whales/gow-prism-offline"
+ARG IMAGE_SOURCE="https://github.com/Baz00k/gow-minecraft"
 ARG IMAGE_DESCRIPTION="Prism Launcher with offline account support for Games on Whales (Wolf)"
-ARG IMAGE_AUTHORS="Games on Whales Community"
-ARG IMAGE_VERSION="dev"
+ARG IMAGE_AUTHORS="Baz00k"
 
 LABEL org.opencontainers.image.source="${IMAGE_SOURCE}"
 LABEL org.opencontainers.image.description="${IMAGE_DESCRIPTION}"
 LABEL org.opencontainers.image.authors="${IMAGE_AUTHORS}"
-LABEL org.opencontainers.image.version="${IMAGE_VERSION}"
 LABEL org.opencontainers.image.title="GoW Prism Launcher (Offline-Enabled)"
 LABEL org.opencontainers.image.licenses="GPL-3.0-only"
-
-# =============================================================================
-# Runtime Configuration
-# =============================================================================
-# No ports exposed - Wolf handles all streaming via its own infrastructure
-# User 'retro' is inherited from base-app image
-# Working directory defaults to HOME (/home/retro) from base-app
